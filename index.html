@@ -1,43 +1,387 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dukung Kreativitas Kami</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #121212; color: #e0e0e0; text-align: center; padding: 40px 20px; margin: 0; }
-        .container { max-width: 450px; margin: auto; background: #1e1e1e; padding: 40px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #ffffff; margin-bottom: 10px; }
-        
-        .qris-wrapper {
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-            padding: 15px;
-            border-radius: 20px;
-            margin: 25px 0;
-            box-shadow: 0 0 20px rgba(187, 134, 252, 0.2);
-            border: 1px solid #333;
-        }
-        .qris-img { max-width: 100%; height: auto; border-radius: 10px; display: block; }
-        
-        .btn-copy { background-color: #bb86fc; color: #121212; padding: 12px 25px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-copy:hover { background-color: #9965f4; }
-        p { color: #b0b0b0; font-size: 1.1em; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVERMINE — Donasi Server</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#070a0a; --panel:#101715; --panel-2:#0c1211; --line:#1d2b26;
+    --emerald:#39ff9a; --emerald-dim:#1c8a56; --enchant:#a970ff; --gold:#ffcf56;
+    --text:#dff5ea; --muted:#7b968c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:
+      radial-gradient(circle at 15% 0%, rgba(169,112,255,0.10), transparent 40%),
+      radial-gradient(circle at 85% 20%, rgba(57,255,154,0.08), transparent 45%),
+      var(--void);
+    color:var(--text); font-family:'IBM Plex Mono', monospace; line-height:1.5; padding-bottom:60px;
+  }
+  ::selection{ background:var(--emerald); color:#04140b; }
+  .noise{ position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 4px);
+    mix-blend-mode:overlay; }
+
+  header{ text-align:center; padding:56px 20px 30px; border-bottom:1px solid var(--line); position:relative; z-index:1;}
+  .eyebrow{ font-size:11px; letter-spacing:.25em; color:var(--enchant); text-transform:uppercase; margin-bottom:18px;}
+  h1.logo{
+    font-family:'Press Start 2P', monospace; font-size:clamp(20px,5vw,36px); color:var(--emerald);
+    text-shadow:0 0 6px rgba(57,255,154,.6),0 0 22px rgba(57,255,154,.35),0 0 44px rgba(57,255,154,.15);
+    letter-spacing:2px; margin:0; animation:flicker 4.5s infinite;
+  }
+  @keyframes flicker{0%,92%,100%{opacity:1;}93%{opacity:.72;}94%{opacity:1;}95%{opacity:.85;}96%{opacity:1;}}
+  header p.tag{ color:var(--muted); font-size:13px; margin-top:16px; }
+
+  main{ max-width:1000px; margin:0 auto; padding:0 20px; position:relative; z-index:1;}
+  section.panel{ background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:26px 24px; margin:24px 0;}
+  section.panel h2{ font-family:'Press Start 2P', monospace; font-size:13px; color:var(--enchant); margin:0 0 18px; letter-spacing:.5px;}
+
+  /* nominal chips */
+  .nominals{ display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-bottom:16px;}
+  .nom-btn{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:6px; color:var(--text);
+    padding:14px 8px; text-align:center; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-weight:600;
+    font-size:13px; transition:all .15s ease;
+  }
+  .nom-btn:hover{ border-color:var(--emerald-dim); }
+  .nom-btn.selected{ border-color:var(--emerald); box-shadow:0 0 16px rgba(57,255,154,.3); color:var(--emerald); }
+
+  .form-row{ margin-bottom:16px; }
+  .form-row label{ display:block; font-size:11.5px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em;}
+  .form-row input[type=text], .form-row input[type=number]{
+    width:100%; padding:12px 14px; background:var(--panel-2); border:1px solid var(--line);
+    border-radius:6px; color:var(--text); font-family:'IBM Plex Mono',monospace; font-size:14px;
+  }
+  .form-row input:focus{ outline:none; border-color:var(--emerald); }
+
+  .summary{ border-top:1px dashed var(--line); margin-top:6px; padding-top:16px;}
+  .summary .line{ display:flex; justify-content:space-between; font-size:13px; padding:4px 0; color:var(--muted);}
+  .summary .total{ display:flex; justify-content:space-between; font-size:16px; font-weight:700; color:var(--emerald);
+    padding-top:10px; margin-top:6px; border-top:1px solid var(--line);}
+
+  .cta{ display:inline-flex; align-items:center; gap:8px; justify-content:center; width:100%; margin-top:18px;
+    background:var(--emerald); color:#04140b; font-weight:700; font-size:13px; letter-spacing:.04em;
+    text-transform:uppercase; text-decoration:none; padding:14px; border-radius:6px; border:none; cursor:pointer;
+    box-shadow:0 0 20px rgba(57,255,154,.35); transition:transform .12s ease; }
+  .cta:hover{ transform:translateY(-1px); }
+  .cta:disabled{ opacity:.4; cursor:not-allowed; box-shadow:none; }
+  .cta.secondary{ background:var(--enchant); color:#0d0620; box-shadow:0 0 20px rgba(169,112,255,.35); }
+  .hint{ font-size:11px; color:var(--muted); text-align:center; margin-top:8px; }
+
+  .qris-box{ display:flex; gap:22px; align-items:center; flex-wrap:wrap; }
+  .qris-img{ width:190px; height:auto; border-radius:8px; border:1px solid var(--line); flex-shrink:0;
+    background:#fff; padding:8px; box-shadow:0 0 22px rgba(57,255,154,.18); }
+  .qris-info{ font-size:12.5px; color:var(--muted); }
+  .qris-info b{ color:var(--text); }
+
+  /* leaderboard */
+  .board{ list-style:none; margin:0; padding:0; }
+  .board li{
+    display:flex; align-items:center; gap:14px; background:var(--panel-2); border:1px solid var(--line);
+    border-radius:6px; padding:12px 16px; margin-bottom:10px; position:relative; overflow:hidden;
+  }
+  .board li.top1{ border-color:var(--gold); box-shadow:0 0 20px rgba(255,207,86,.25); }
+  .board li.top2{ border-color:#c9d4e0; box-shadow:0 0 16px rgba(201,212,224,.2); }
+  .board li.top3{ border-color:#d98e5a; box-shadow:0 0 16px rgba(217,142,90,.2); }
+  .board .rank{ font-family:'Press Start 2P',monospace; font-size:13px; width:34px; text-align:center; color:var(--muted); }
+  .board li.top1 .rank{ color:var(--gold); }
+  .board li.top2 .rank{ color:#c9d4e0; }
+  .board li.top3 .rank{ color:#d98e5a; }
+  .board .medal{ font-size:18px; width:24px; }
+  .board .name{ flex:1; font-size:14px; font-weight:600; }
+  .board .amount{ font-size:13px; color:var(--emerald); font-weight:700; }
+
+  .history{ list-style:none; margin:0; padding:0; max-height:340px; overflow-y:auto; }
+  .history li{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:6px;
+    padding:10px 14px; margin-bottom:8px; font-size:12.5px;
+  }
+  .history .h-left{ display:flex; flex-direction:column; }
+  .history .h-name{ color:var(--text); font-weight:600; }
+  .history .h-time{ color:var(--muted); font-size:11px; }
+  .history .h-amount{ color:var(--emerald); font-weight:700; white-space:nowrap; }
+
+  footer{ text-align:center; color:var(--muted); font-size:11px; margin-top:40px; }
+
+  /* thank you overlay animation */
+  .thanks-overlay{
+    position:fixed; inset:0; z-index:50; display:none; align-items:center; justify-content:center;
+    background:rgba(4,8,7,0.88); backdrop-filter:blur(3px);
+  }
+  .thanks-overlay.show{ display:flex; }
+  .thanks-card{
+    background:var(--panel); border:1px solid var(--emerald); border-radius:12px; padding:40px 30px;
+    text-align:center; max-width:340px; box-shadow:0 0 60px rgba(57,255,154,.4);
+    animation:popin .35s ease;
+  }
+  @keyframes popin{ from{ transform:scale(.85); opacity:0;} to{ transform:scale(1); opacity:1;} }
+  .thanks-card .big{ font-size:44px; margin-bottom:10px; animation:bounce 1.2s ease infinite; }
+  @keyframes bounce{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+  .thanks-card h3{ font-family:'Press Start 2P',monospace; font-size:14px; color:var(--emerald); margin:0 0 12px; }
+  .thanks-card p{ font-size:13px; color:var(--muted); margin:0 0 20px; }
+  .thanks-card button{
+    background:transparent; border:1px solid var(--line); color:var(--text); padding:10px 20px;
+    border-radius:6px; cursor:pointer; font-family:'IBM Plex Mono',monospace;
+  }
+  .confetti{ position:absolute; top:-10px; width:6px; height:12px; opacity:.9; animation:fall linear forwards; }
+  @keyframes fall{ to{ transform:translateY(110vh) rotate(360deg); opacity:0; } }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Terima Kasih! ✨</h1>
-        <p>Dukungan Anda membantu saya untuk terus berkarya.</p>
-        
-        <div class="qris-wrapper">
-            <!-- Source gambar diganti ke nama file QRIS yang baru -->
-            <img src="IMG-20260722-WA0046.jpg" alt="QRIS Toko Nexrly" class="qris-img">
-        </div>
-        
-        <p><strong>Toko Nexrly</strong><br>ID1025463622114</p>
-        
-        <button class="btn-copy" onclick="navigator.clipboard.writeText('ID1025463622114'); alert('NMID Berhasil Disalin!')">Klik untuk Copy NMID</button>
-        <p style="font-size: 0.85em; margin-top: 20px;">Scan QRIS melalui aplikasi perbankan atau e-wallet favorit Anda.</p>
+<div class="noise"></div>
+<div class="thanks-overlay" id="thanksOverlay">
+  <div class="thanks-card">
+    <div class="big">🎉</div>
+    <h3>TERIMA KASIH!</h3>
+    <p id="thanksText">Namamu langsung masuk ke Top Donatur! Konfirmasi juga sudah terkirim ke admin lewat WhatsApp.</p>
+    <button onclick="closeThanks()">Tutup</button>
+  </div>
+</div>
+
+<header>
+  <div class="eyebrow">🌍 Evermine Server</div>
+  <h1 class="logo">DUKUNG EVERMINE</h1>
+  <p class="tag">Donasi buat bantu biaya server tetap online 24 jam</p>
+</header>
+
+<main>
+
+  <section class="panel">
+    <h2>&gt; Isi Donasi</h2>
+    <div class="form-row">
+      <label>Nama Kamu / IGN</label>
+      <input type="text" id="donorName" placeholder="Contoh: Nexrly">
     </div>
+
+    <div class="form-row">
+      <label>Pilih Nominal</label>
+      <div class="nominals" id="nominals"></div>
+      <input type="number" id="customAmount" placeholder="Atau isi nominal sendiri (Rp)" min="1000" style="margin-top:4px;">
+    </div>
+
+    <div class="summary">
+      <div class="line"><span>Donasi dari</span><b id="sumName">—</b></div>
+      <div class="total"><span>Total Donasi</span><span id="sumTotal">Rp0</span></div>
+    </div>
+
+    <button class="cta" onclick="scrollToPay()">Lanjut ke Pembayaran QRIS ↓</button>
+  </section>
+
+  <section class="panel" id="payment">
+    <h2>&gt; Scan &amp; Bayar QRIS</h2>
+    <div class="qris-box">
+      <img class="qris-img" src="qris.jpg" alt="QRIS Toko Nexrly Gaming">
+      <div class="qris-info">
+        <p><b>TOKO NEXRLY, GAMING</b><br>NMID: ID1025463622114</p>
+        <p>Scan pakai aplikasi berlogo QRIS apa saja (GoPay, OVO, Dana, m-Banking, dll) sesuai total donasi di atas.</p>
+      </div>
+    </div>
+    <button class="cta secondary" onclick="confirmPaid()">✅ Saya Sudah Bayar / Donasi</button>
+    <p class="hint">Klik ini setelah kamu selesai scan &amp; transfer — nanti otomatis buka WhatsApp buat konfirmasi ke admin.</p>
+  </section>
+
+  <section class="panel">
+    <h2>&gt; 🏆 Top Donatur</h2>
+    <ul class="board" id="board"></ul>
+    <p class="hint" style="margin-top:14px;">*Daftar ini otomatis terupdate setiap ada yang klik "Saya Sudah Bayar".</p>
+  </section>
+
+  <section class="panel">
+    <h2>&gt; 🕒 Riwayat Donasi</h2>
+    <ul class="history" id="history"></ul>
+    <p class="hint" style="margin-top:14px;" id="historyEmpty">Belum ada riwayat donasi.</p>
+  </section>
+
+</main>
+
+<footer>Terima kasih sudah mendukung Evermine Server 💚</footer>
+
+<script>
+/* ============================================================
+   KONEKSI JSONBIN — otomatis simpan & tampilkan ke semua pengunjung
+   ============================================================ */
+const BIN_ID = "6a69ffedf5f4af5e29d15334";
+const API_KEY = "$2a$10$c96r/tOVY0F.AfBty8eA9ObI.wy4lhKei5QtDtYdnsl5r9rQxbMfa";
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+let DONATORS = [];
+
+async function loadDonators(){
+  try{
+    const res = await fetch(`${JSONBIN_URL}/latest`, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    const data = await res.json();
+    DONATORS = data.record.donators || [];
+  }catch(err){
+    console.error("Gagal ambil data donatur:", err);
+    DONATORS = [];
+  }
+  renderBoard();
+  renderHistory();
+}
+
+async function saveDonators(){
+  try{
+    await fetch(JSONBIN_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify({ donators: DONATORS })
+    });
+  }catch(err){
+    console.error("Gagal simpan data donatur:", err);
+  }
+}
+
+const PRESETS = [10000, 25000, 50000, 100000, 250000, 500000];
+let selectedAmount = 0;
+
+function fmt(n){ return 'Rp' + n.toLocaleString('id-ID'); }
+
+function renderPresets(){
+  const wrap = document.getElementById('nominals');
+  wrap.innerHTML = '';
+  PRESETS.forEach(p => {
+    const btn = document.createElement('div');
+    btn.className = 'nom-btn';
+    btn.textContent = fmt(p);
+    btn.onclick = () => {
+      selectedAmount = p;
+      document.getElementById('customAmount').value = '';
+      renderPresets();
+      updateSummary();
+    };
+    if(selectedAmount === p) btn.classList.add('selected');
+    wrap.appendChild(btn);
+  });
+}
+
+document.getElementById('customAmount').addEventListener('input', (e) => {
+  const v = parseInt(e.target.value) || 0;
+  selectedAmount = v;
+  renderPresets();
+  updateSummary();
+});
+document.getElementById('donorName').addEventListener('input', updateSummary);
+
+function updateSummary(){
+  const name = document.getElementById('donorName').value.trim();
+  document.getElementById('sumName').textContent = name || '—';
+  document.getElementById('sumTotal').textContent = fmt(selectedAmount || 0);
+}
+
+function scrollToPay(){
+  const name = document.getElementById('donorName').value.trim();
+  if(!name){ alert('Isi dulu nama/IGN kamu ya!'); return; }
+  if(!selectedAmount || selectedAmount < 1000){ alert('Pilih atau isi nominal donasi dulu ya!'); return; }
+  document.getElementById('payment').scrollIntoView({ behavior:'smooth' });
+}
+
+async function confirmPaid(){
+  const name = document.getElementById('donorName').value.trim();
+  if(!name || !selectedAmount){
+    alert('Lengkapi nama dan nominal donasi dulu di bagian atas ya!');
+    return;
+  }
+
+  DONATORS.push({ name: name, amount: selectedAmount, time: Date.now() });
+  renderBoard();
+  renderHistory();
+  showThanks();
+  await saveDonators();
+
+  const msg = `Halo admin Evermine, saya sudah donasi:\nNama/IGN: ${name}\nNominal: ${fmt(selectedAmount)}\nSudah otomatis masuk Top Donatur di website. Terima kasih!`;
+  const url = `https://wa.me/628975293251?text=${encodeURIComponent(msg)}`;
+  window.location.href = url;
+}
+
+function showThanks(){
+  document.getElementById('thanksOverlay').classList.add('show');
+  launchConfetti();
+}
+function closeThanks(){
+  document.getElementById('thanksOverlay').classList.remove('show');
+}
+
+function launchConfetti(){
+  const colors = ['#39ff9a','#a970ff','#ffcf56','#dff5ea'];
+  for(let i=0;i<40;i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (2 + Math.random()*1.5) + 's';
+    c.style.zIndex = 60;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+function renderBoard(){
+  const totals = {};
+  DONATORS.forEach(d => {
+    totals[d.name] = (totals[d.name] || 0) + d.amount;
+  });
+  const sorted = Object.entries(totals)
+    .map(([name, amount]) => ({ name, amount }))
+    .sort((a,b) => b.amount - a.amount);
+
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  const medals = ['🥇','🥈','🥉'];
+  sorted.forEach((d, i) => {
+    const li = document.createElement('li');
+    if(i===0) li.classList.add('top1');
+    if(i===1) li.classList.add('top2');
+    if(i===2) li.classList.add('top3');
+    li.innerHTML = `
+      <span class="rank">#${i+1}</span>
+      <span class="medal">${medals[i] || '🔹'}</span>
+      <span class="name">${d.name}</span>
+      <span class="amount">${fmt(d.amount)}</span>
+    `;
+    board.appendChild(li);
+  });
+}
+
+function renderHistory(){
+  const list = document.getElementById('history');
+  const emptyMsg = document.getElementById('historyEmpty');
+  const sorted = [...DONATORS].sort((a,b) => (b.time||0) - (a.time||0));
+  list.innerHTML = '';
+
+  if(sorted.length === 0){
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+
+  sorted.slice(0, 30).forEach(d => {
+    const li = document.createElement('li');
+    const timeStr = d.time
+      ? new Date(d.time).toLocaleString('id-ID', { dateStyle:'medium', timeStyle:'short' })
+      : '—';
+    li.innerHTML = `
+      <div class="h-left">
+        <span class="h-name">${d.name}</span>
+        <span class="h-time">${timeStr}</span>
+      </div>
+      <span class="h-amount">${fmt(d.amount)}</span>
+    `;
+    list.appendChild(li);
+  });
+}
+
+renderPresets();
+loadDonators();
+updateSummary();
+</script>
 </body>
 </html>
