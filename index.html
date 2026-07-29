@@ -137,7 +137,7 @@
   <div class="thanks-card">
     <div class="big">🎉</div>
     <h3>TERIMA KASIH!</h3>
-    <p id="thanksText">Namamu langsung masuk ke Top Donatur! Konfirmasi juga sudah terkirim ke admin lewat WhatsApp.</p>
+    <p id="thanksText">Konfirmasi terkirim! Namamu masuk status <b>Menunggu Verifikasi</b> — begitu admin approve, otomatis tampil di Top Donatur & Riwayat.</p>
     <button onclick="closeThanks()">Tutup</button>
   </div>
 </div>
@@ -207,6 +207,7 @@
 const BIN_ID = "6a69ffedf5f4af5e29d15334";
 const API_KEY = "$2a$10$c96r/tOVY0F.AfBty8eA9ObI.wy4lhKei5QtDtYdnsl5r9rQxbMfa";
 const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1532023184768106599/C-izIaTj7QZ8GJtg6QlPjZ_m1yfT2ftJErxLwND4fojtL854vqk6TyKc9hj9nDXOhU4w";
 
 let DONATORS = [];
 
@@ -284,6 +285,31 @@ function scrollToPay(){
   document.getElementById('payment').scrollIntoView({ behavior:'smooth' });
 }
 
+async function sendDiscordNotif(name, amount, time){
+  const timeStr = new Date(time).toLocaleString('id-ID', { dateStyle:'medium', timeStyle:'short' });
+  const payload = {
+    embeds: [{
+      title: "💚 Donasi Baru Masuk!",
+      color: 3785497,
+      fields: [
+        { name: "Nama/IGN", value: name, inline: true },
+        { name: "Nominal", value: fmt(amount), inline: true },
+        { name: "Waktu", value: timeStr, inline: false },
+        { name: "Status", value: "⏳ Menunggu Verifikasi Admin", inline: false }
+      ]
+    }]
+  };
+  try{
+    await fetch(DISCORD_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  }catch(err){
+    console.error("Gagal kirim notif Discord:", err);
+  }
+}
+
 async function confirmPaid(){
   const name = document.getElementById('donorName').value.trim();
   if(!name || !selectedAmount){
@@ -291,13 +317,15 @@ async function confirmPaid(){
     return;
   }
 
-  DONATORS.push({ name: name, amount: selectedAmount, time: Date.now() });
+  const time = Date.now();
+  DONATORS.push({ name: name, amount: selectedAmount, time: time, status: "pending" });
   renderBoard();
   renderHistory();
   showThanks();
   await saveDonators();
+  sendDiscordNotif(name, selectedAmount, time);
 
-  const msg = `Halo admin Evermine, saya sudah donasi:\nNama/IGN: ${name}\nNominal: ${fmt(selectedAmount)}\nSudah otomatis masuk Top Donatur di website. Terima kasih!`;
+  const msg = `Halo admin Evermine, saya sudah donasi:\nNama/IGN: ${name}\nNominal: ${fmt(selectedAmount)}\nStatus: menunggu verifikasi admin. Terima kasih!`;
   const url = `https://wa.me/628975293251?text=${encodeURIComponent(msg)}`;
   window.location.href = url;
 }
@@ -325,8 +353,9 @@ function launchConfetti(){
 }
 
 function renderBoard(){
+  const verified = DONATORS.filter(d => d.status !== "pending");
   const totals = {};
-  DONATORS.forEach(d => {
+  verified.forEach(d => {
     totals[d.name] = (totals[d.name] || 0) + d.amount;
   });
   const sorted = Object.entries(totals)
@@ -354,7 +383,8 @@ function renderBoard(){
 function renderHistory(){
   const list = document.getElementById('history');
   const emptyMsg = document.getElementById('historyEmpty');
-  const sorted = [...DONATORS].sort((a,b) => (b.time||0) - (a.time||0));
+  const verified = DONATORS.filter(d => d.status !== "pending");
+  const sorted = [...verified].sort((a,b) => (b.time||0) - (a.time||0));
   list.innerHTML = '';
 
   if(sorted.length === 0){
