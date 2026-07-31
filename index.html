@@ -181,13 +181,13 @@
       </div>
     </div>
     <button class="cta secondary" onclick="confirmPaid()">✅ Saya Sudah Bayar / Donasi</button>
-    <p class="hint">Klik ini setelah kamu selesai scan &amp; transfer — nanti otomatis buka WhatsApp buat konfirmasi ke admin.</p>
+    <p class="hint">Klik ini setelah kamu selesai scan &amp; transfer. Donasimu akan tercatat sebagai <b>Menunggu Verifikasi</b> dan tim admin Evermine akan mengeceknya secara manual sebelum tampil di Top Donatur &amp; Riwayat.</p>
   </section>
 
   <section class="panel">
     <h2>&gt; 🏆 Top Donatur</h2>
     <ul class="board" id="board"></ul>
-    <p class="hint" style="margin-top:14px;">*Daftar ini otomatis terupdate setiap ada yang klik "Saya Sudah Bayar".</p>
+    <p class="hint" style="margin-top:14px;">*Daftar ini otomatis terupdate setiap donasi sudah diverifikasi admin.</p>
   </section>
 
   <section class="panel">
@@ -324,10 +324,6 @@ async function confirmPaid(){
   showThanks();
   await saveDonators();
   sendDiscordNotif(name, selectedAmount, time);
-
-  const msg = `Halo admin Evermine, saya sudah donasi:\nNama/IGN: ${name}\nNominal: ${fmt(selectedAmount)}\nStatus: menunggu verifikasi admin. Terima kasih!`;
-  const url = `https://wa.me/628975293251?text=${encodeURIComponent(msg)}`;
-  window.location.href = url;
 }
 
 function showThanks(){
